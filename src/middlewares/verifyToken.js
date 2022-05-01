@@ -36,4 +36,28 @@ async function verifyToken(req, res, next) {
     }
 }
 
-export default verifyToken;
+async function verifyTokenAdmin(req, res, next) {
+    const header = req.headers.authorization;
+
+    if (!header) {
+        return res.status(401).json({ message: 'Autenticação necessária.' });
+    }
+
+    const [type, token] = header.split(' ');
+
+    if (isMalformed(type, token)) {
+        return res.status(401).json({ message: 'Token inválido.' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.SECRETADMIN);
+
+        req.userId = decoded.id;
+
+        return next();
+    } catch (error) {
+        return res.status(401).json({ message: 'Token inválido.' });
+    }
+}
+
+export { verifyToken, verifyTokenAdmin };
