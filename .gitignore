@@ -1,0 +1,13 @@
+node_modules/*
+
+# Log da aplicação
+*.log
+
+# Configuração da IDE
+.idea/*
+
+# Build de produção
+build/*
+
+# Variáveis de ambiente
+.env

@@ -1,0 +1,47 @@
+### Raiz
+GET http://localhost:8080/api
+
+### Criar usuário
+POST http://localhost:8080/api/register HTTP/1.1
+content-type: application/json
+
+{
+    "name": "Sófocles Teamildo",
+    "email": "softeam2@gmail.com",
+    "password": "thecakeisalie",
+    "role": "Vendor",
+    "cnpj": "12.456.789/0001-90"
+}
+
+### Obter todos os usuários
+GET http://localhost:8080/api/user HTTP/1.1
+
+### Obter um usuário pelo ID
+GET http://localhost:8080/api/user/5f1234205dc3d1e2c613618 HTTP/1.1
+
+### Atualizar dados do usuário
+PUT http://localhost:8080/api/user/ HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTEyMzQyMDVkYzNkMWUyYzYxMzYxOCIsImlhdCI6MTU5OTI1MDAzOSwiZXhwIjoxNTk5MzM2NDM5fQ.szbbZRQpWAxdFvUUnZ1mrHGksMv5aKsXKXvpnYJSyEg
+content-type: application/json
+
+{
+    "name": "Sófocles Teamildo Espírito Januário Cruz",
+    "email": "softeam1@gmail.com",
+    "password": "thecakeislie"
+}
+
+### Deletar usuário
+DELETE http://localhost:8080/api/user HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTIyOWE3NmVhNTkwM2I2MGFlOTQ3MSIsImlhdCI6MTU5OTIyMDMxMywiZXhwIjoxNTk5MzA2NzEzfQ.n749Ukt5JTfKSiTRKzO-ho2pS1smDET1h-iXnj437z4
+
+### Autenticar
+POST http://localhost:8080/api/auth HTTP/1.1
+content-type: application/json
+
+{
+    "email": "softeam@gmail.com",
+    "password": "thecakeislie"
+}
+
+### Obter logs
+GET http://localhost:8080/api/log
