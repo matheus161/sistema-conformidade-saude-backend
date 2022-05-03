@@ -15,7 +15,7 @@ const GrupoReqSchema = new Schema(
     { timeStamps: true, discriminatorKey: 'role' },
 );
 
-const GrupoRequisito = model('GrupoReq', GrupoReqSchema);
+const GrupoRequisito = model('GrupoRequisito', GrupoReqSchema);
 
 const grupoReqRules = Joi.object({
     titulo: Joi.string().required(),
