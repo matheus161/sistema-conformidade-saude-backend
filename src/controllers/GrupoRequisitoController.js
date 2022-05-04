@@ -2,6 +2,14 @@ import { GrupoRequisito } from '../models/GrupoRequisito';
 
 async function store(req, res) {
     try {
+        const { titulo } = req.body;
+
+        // Checando se o grupo de requisito já existe no banco
+        const grupoReqExists = await GrupoRequisito.findOne({ titulo });
+        if (grupoReqExists) {
+            return res.status(404).json({ message: 'Requisito already exists' });
+        }
+
         const grupoReq = await GrupoRequisito.create(req.body);
 
         return res.status(201).json(grupoReq);
