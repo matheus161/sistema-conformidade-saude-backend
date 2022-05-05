@@ -28,7 +28,7 @@ function addExitSignals(app, server, exitSignals) {
 
         await app.database.connect();
 
-        const server = app.listen(process.env.APP_PORT, () => {
+        const server = app.listen(process.env.APP_PORT || 3030, () => {
             LogUtils.log(`App escutando na porta ${process.env.APP_PORT}.`);
         });
 
