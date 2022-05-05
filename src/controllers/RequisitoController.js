@@ -38,6 +38,9 @@ async function index(req, res) {
 async function show(req, res) {
     try {
         const requisito = await Requisito.findById(req.params.id).populate('grupoRequisito');
+        if (!requisito) {
+            return res.status(404).json({ message: 'Requisito not found' });
+        }
 
         return res.status(200).json(requisito);
     } catch (error) {

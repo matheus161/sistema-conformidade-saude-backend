@@ -31,6 +31,9 @@ async function index(req, res) {
 async function show(req, res) {
     try {
         const modalidade = await Modalidade.findById(req.params.id);
+        if (!modalidade) {
+            return res.status(404).json({ message: 'Modalidade not found' });
+        }
 
         return res.status(200).json(modalidade);
     } catch (error) {
