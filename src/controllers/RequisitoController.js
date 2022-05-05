@@ -47,34 +47,20 @@ async function show(req, res) {
 
 async function update(req, res) {
     try {
-        const { nameId, grupoRequisito } = req.body;
-        const requisito = await Requisito.findById(req.params.id);
+        const { grupoRequisito } = req.body;
 
-        // Checo se o nome de requisito que eu estou passando já existe no banco
-        if (nameId !== requisito.nameId) {
-            const requisitoExists = await Requisito.findOne({ nameId });
-            if (requisitoExists) {
-                return res.status(404).json({ message: 'Requisito already exists' });
-            }
+        const grupoReqExists = await GrupoRequisito.findById(grupoRequisito);
+
+        if (!grupoReqExists) {
+            return res.status(404).json({ message: 'Grupo Requisito not valid' });
         }
 
-        // Checo de o grupo de Requisito é valido
-        if (grupoRequisito !== requisito.grupoRequisito) {
-            const grupoReqExists = await GrupoRequisito.findById(grupoRequisito);
-            if (!grupoReqExists) {
-                return res.status(404).json({ message: 'Grupo Requisito not valid' });
-            }
-        }
+        const requisitoUpdated = await Requisito.findByIdAndUpdate(req.params.id,
+            req.body, { new: true });
 
-        // Alterando os atributos manualmente
-        requisito.nameId = req.body.nameId || requisito.nameId;
-        requisito.titulo = req.body.titulo || requisito.titulo;
-        requisito.descricao = req.body.descricao || requisito.descricao;
-        requisito.grupoRequisito = req.body.grupoRequisito || requisito.grupoRequisito;
+        await requisitoUpdated.save();
 
-        await requisito.save();
-
-        return res.status(200).json(requisito);
+        return res.status(200).json(requisitoUpdated);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
