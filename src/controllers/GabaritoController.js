@@ -19,13 +19,13 @@ async function store(req, res) {
             return res.status(404).json({ message: 'Modalidade not found' });
         }
 
-        // Checando se o requisito já existe no banco
-        requisito.forEach(async (element) => {
-            const requisitoExists = await Requisito.findById(element);
+        //Checando se o requisito já existe no banco
+        for (const item of requisito) {
+            const requisitoExists = await Requisito.findById(item);
             if (!requisitoExists) {
                 return res.status(404).json({ message: 'Requisito not found' });
             }
-        });
+        }
 
         const gabarito = await Gabarito.create(req.body);
 
@@ -81,15 +81,15 @@ async function update(req, res) {
             }
         }
         
-        //Checando se o requisito já existe no banco        
-        requisito.forEach(async (element) => {
-            if (element !== gabarito.requisito[index]) {
-                const requisitoExists = await Requisito.findById(element);
+        //Checando se o requisito passado é válido       
+        for (let index = 0; index < requisito.length; index++) {
+            if (requisito[index] !== gabarito.requisito[index]) {
+                const requisitoExists = await Requisito.findById(requisito[index]);
                 if (!requisitoExists) {
                     return res.status(404).json({ message: 'Requisito not found' });
                 }
-            }
-        });
+            }            
+        }
 
         // Alterando os atributos manualmente
         gabarito.categoria = categoria || gabarito.categoria;
