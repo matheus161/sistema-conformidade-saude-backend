@@ -31,6 +31,9 @@ async function index(req, res) {
 async function show(req, res) {
     try {
         const grupoReq = await GrupoRequisito.findById(req.params.id);
+        if (!grupoReq) {
+            return res.status(404).json({ message: 'Grupo Requisito not found' });
+        }
 
         return res.status(200).json(grupoReq);
     } catch (error) {

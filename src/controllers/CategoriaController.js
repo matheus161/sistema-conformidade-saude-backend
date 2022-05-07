@@ -31,6 +31,9 @@ async function index(req, res) {
 async function show(req, res) {
     try {
         const categoria = await Categoria.findById(req.params.id);
+        if (!categoria) {
+            return res.status(404).json({ message: 'Categoria not found' });
+        }
 
         return res.status(200).json(categoria);
     } catch (error) {
