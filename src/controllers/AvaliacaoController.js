@@ -1,5 +1,7 @@
 import { Avaliacao } from "../models/Avaliacao";
 import { Gabarito } from "../models/Gabarito";
+import { Categoria } from "../models/Categoria";
+import { Modalidade } from "../models/Modalidade";
 
 async function store(req, res) {
     try {
@@ -41,12 +43,16 @@ async function store(req, res) {
 
 async function index(req, res) {
     try {
-        const avaliacao = await Avaliacao.find().populate(['user','respostas.requisito']);;
+        const {userId} = req;
+
+        const avaliacao = await Avaliacao
+            .find({ user: userId})
+            .populate(['user', 'respostas.requisito']); 
 
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avaliacao not found' });
         }
-
+        
         return res.status(200).json(avaliacao);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -57,11 +63,22 @@ async function show(req, res) {
     try {
         const avaliacao = await Avaliacao
             .findById(req.params.id)
-            .populate(['user','respostas.requisito']);
+            .populate(['user', 'gabarito', 'respostas.requisito']);
 
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avaliacao not found' });
         }
+
+        if (avaliacao.gabarito.categoria) {
+            // Populate não funciona como eu preciso
+            const categoria = await Categoria.findOne(avaliacao.gabarito.categoria);
+            avaliacao.gabarito.categoria = categoria;
+        } 
+        if (avaliacao.gabarito.modalidade) {
+            // Populate não funciona como eu preciso
+            const modalidade = await Modalidade.findOne(avaliacao.gabarito.modalidade);
+            avaliacao.gabarito.modalidade = modalidade;
+        } 
 
         return res.status(200).json(avaliacao);
     } catch (error) {

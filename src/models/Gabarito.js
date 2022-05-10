@@ -24,7 +24,7 @@ const GabaritoSchema = new Schema(
         }
     },
 
-    { timeStamps: true, discriminatorKey: 'role' },
+    { timeStamps: true },
 );
 
 // Criando uma model
