@@ -1,0 +1,126 @@
+import { Avaliacao } from "../models/Avaliacao";
+import { Gabarito } from "../models/Gabarito";
+
+async function store(req, res) {
+    try {
+        const { userId } = req;
+        const { gabarito } = req.body;
+        
+        // Checando se o gabarito existe
+        const gabaritoExists = await Gabarito.findById(gabarito);
+        if (!gabaritoExists) {
+            return res.status(404).json({ message: 'Gabarito not found' });
+        }
+        
+        // Criando objeto data 
+        var date = new Date();
+
+        // Setando o User, data e lastUpdate
+        req.body.user = userId;
+        req.body.dataCreate = date;
+        req.body.lastUpdate = date;
+
+        // Pegando todos os requisitos e preenchendo o array resposta
+        let arr = [];
+        for (let pos = 0; pos < gabaritoExists.requisito.length; pos++) {
+            //arr[index] = gabaritoExists.requisito[index];
+            arr[pos] = {['requisito']:gabaritoExists.requisito[pos]};
+        }
+        req.body.respostas = arr;
+        req.body.total = arr.length; // Pegando a quantidade de requisitos
+        req.body.qtdNao = arr.length; // Pegando a quantidade de requisitos não respondidos
+
+        // Criando Avaliacao
+        const avaliacao = await Avaliacao.create(req.body);
+
+        return res.status(201).json(avaliacao);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function index(req, res) {
+    try {
+        const avaliacao = await Avaliacao.find().populate(['user','respostas.requisito']);;
+
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avaliacao not found' });
+        }
+
+        return res.status(200).json(avaliacao);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function show(req, res) {
+    try {
+        const avaliacao = await Avaliacao
+            .findById(req.params.id)
+            .populate(['user','respostas.requisito']);
+
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avaliacao not found' });
+        }
+
+        return res.status(200).json(avaliacao);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function answer(req, res) {
+    try {
+        const { id, index, answer } = req.params; 
+
+        const avaliacao = await Avaliacao.findById(id);
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avaliacao not found' });
+        }
+
+        // Checando se ele é o próximo não respondido
+        // Não pode responder um sem reponder o anterior
+        if (index > avaliacao.nextIndex)
+            return res.status(404).json({ message: 'Index not valid' }); 
+
+        // Criando objeto data 
+        var date = new Date();
+
+        // Alterando parâmetros de contagem
+        // Tratando para não contar a mais
+        if ( avaliacao.respostas[index].answer == null) {
+            //let count = avaliacao.respondido + 1;
+            avaliacao.qtdSim = avaliacao.qtdSim + 1;
+            avaliacao.qtdNao = avaliacao.qtdNao - 1;
+            avaliacao.nextIndex = avaliacao.nextIndex + 1;
+        }
+
+        // Alterando a resposta no index passado
+        // Altero minha resposta e passo meu requisito de novo
+        avaliacao.respostas[index] = {['answer']:answer, ['requisito']:avaliacao.respostas[index].requisito}; 
+    
+        avaliacao.lastUpdate = date;// Alterando a data de atualização
+
+        await avaliacao.save();
+
+        return res.status(200).json(avaliacao);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function remove(req, res) {
+    try {
+       const avaliacaoDeleted = await Avaliacao.findByIdAndRemove(req.params.id);
+
+       if(avaliacaoDeleted) {
+        return res.status(404).json({ message: 'Avaliacao not found' });
+       }
+
+       return res.status(200).json({ message: 'Avaliacao deleted with sucsess' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export default { store, index, show, answer, remove }; 
