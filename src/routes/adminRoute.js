@@ -10,6 +10,7 @@ import { verifyTokenAdmin } from '../middlewares/verifyToken';
 const router = Router();
 
 router.use(limitRequests.slightly);
+router.put('/resetpass', AdminController.resetPassword);
 router.use(verifyTokenAdmin);
 router.post('/', validate(adminRules), AdminController.store);
 router.get('/', AdminController.index);

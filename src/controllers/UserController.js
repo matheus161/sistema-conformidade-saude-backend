@@ -1,4 +1,6 @@
 import { User } from '../models/User';
+import mailer from '../lib/mailer';
+import resetPass from '../constants/email_body/reset-pass';
 
 async function create(req, res) {
     try {
@@ -109,10 +111,38 @@ async function remove(req, res) {
     }
 }
 
+async function resetPassword(req, res) {
+    try {
+        const { email } = req.body;
+
+        const user = await User.findOne({ email });
+        if(!user)
+            return res.status(400).json({ message: 'User with this email does not exists '});
+
+        const newPass = Math.random().toString(36).slice(-10); 
+
+        mailer.sendMail({
+            from: 'Equipe Avalia SBIS <validasbis@hotmail.com>',
+            to: email,
+            subject: 'Solicitação de nova senha',
+            html: resetPass(user.name, newPass),
+        }).catch(console.error);
+
+        user.password = newPass;
+        await user.save();
+
+        return res.status(200).json({ message: 'Email has been sent'});
+
+    } catch (error) {
+        return res.status(500).json({ message });
+    }
+}
+
 export default {
     create,
     update,
     remove,
     getAll,
-    getById
+    getById,
+    resetPassword
 };

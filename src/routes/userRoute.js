@@ -11,6 +11,7 @@ router.use(limitRequests.slightly);
 router.get('/', UserController.getAll);
 router.get('/:id', verifyId, UserController.getById);
 router.post('/', UserController.create);
+router.put('/resetpass', UserController.resetPassword);
 
 router.use(verifyToken);
 
