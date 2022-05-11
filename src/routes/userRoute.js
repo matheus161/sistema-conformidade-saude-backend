@@ -14,6 +14,7 @@ router.post('/', UserController.create);
 
 router.use(verifyToken);
 
+router.patch('/changePass', UserController.changePassword);
 router.put('/', UserController.update);
 router.delete('/', UserController.remove);
 

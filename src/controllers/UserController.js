@@ -1,4 +1,5 @@
 import { User } from '../models/User';
+import PasswordUtils from '../utils/PasswordUtils';
 
 async function create(req, res) {
     try {
@@ -19,7 +20,7 @@ async function create(req, res) {
 async function update(req, res) { // Separar o update em dois: update e updatePass
     try {
         const { userId } = req;
-        const {name, email} = req.body;
+        const { name, email } = req.body;
 
         const user = await User.findById(userId);
 
@@ -27,15 +28,14 @@ async function update(req, res) { // Separar o update em dois: update e updatePa
             return res.status(404).json({ message: `Não foi encontrado usuário com o id ${userId}` });
         }
 
-        if (email !== user.email){
+        if (email !== user.email) {
             const emailExist = await User.findOne({ email });
-            if(emailExist)
-                return res.status(400).json({ message: 'Email already exists'});
+            if (emailExist) return res.status(400).json({ message: 'Email already exists' });
         }
 
         await User.updateOne({
-            name: name,
-            email: email,
+            name,
+            email,
         });
 
         const updatedUser = await User.findById(userId);
@@ -46,31 +46,31 @@ async function update(req, res) { // Separar o update em dois: update e updatePa
     }
 }
 
-// async function changePassword(req, res) { // Separar o update em dois: update e updatePass
-//     try {
-//         const { userId } = req;
-//         const { password, newPassword } = req.body;
+async function changePassword(req, res) {
+    try {
+        const { userId } = req;
+        const { password, newPassword } = req.body;
 
-//         const user = await User.findById(userId);
+        const user = await User.findById(userId);
 
-//         if (!user) {
-//             return res.status(404).json({ message: `Não foi encontrado usuário com o id ${userId}` });
-//         }
+        if (!user) {
+            return res.status(404).json({ message: `Não foi encontrado usuário com o id ${userId}` });
+        }
 
-//         if(!(await PasswordUtils.match(password, user?.password))) {
-//             return res.status(403).json({ message: 'Incorrect password'});
-//         }
+        const passwordsMatch = await PasswordUtils.match(password, user.password);
+        if (!passwordsMatch) {
+            return res.status(401).json({ message: 'Password atual está incorreto' });
+        }
 
-//         // Precisamos chamar save pra acionar o middleware de criptografia.
-//         //await user.save();
+        user.password = newPassword;
+        await user.save();// Possui um 'pré' que faz a encriptação
 
-//         //user.password = undefined;
-
-//         return res.status(200).json({message : 'Deus e fiel'});
-//     } catch ({ message }) {
-//         return res.status(500).json({ message });
-//     }
-// }
+        user.password = undefined;
+        return res.status(200).json(user);
+    } catch ({ message }) {
+        return res.status(500).json({ message });
+    }
+}
 
 async function getAll(req, res) {
     try {
@@ -114,5 +114,6 @@ export default {
     update,
     remove,
     getAll,
+    changePassword,
     getById
 };
