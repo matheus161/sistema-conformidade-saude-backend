@@ -30,7 +30,6 @@ async function store(req, res) {
         }
         req.body.respostas = arr;
         req.body.total = arr.length; // Pegando a quantidade de requisitos
-        req.body.qtdNao = arr.length; // Pegando a quantidade de requisitos não respondidos
 
         // Criando Avaliacao
         const avaliacao = await Avaliacao.create(req.body);
@@ -105,11 +104,23 @@ async function answer(req, res) {
 
         // Alterando parâmetros de contagem
         // Tratando para não contar a mais
-        if ( avaliacao.respostas[index].answer == null) {
-            //let count = avaliacao.respondido + 1;
+        if ( avaliacao.respostas[index].answer === null) {
+            if (answer === 'Sim' ) {
+                // Acrescentando na quantidade de Sim respondidos
+                avaliacao.qtdSim = avaliacao.qtdSim + 1;
+                
+            } else if (answer === "Nao") {
+                // Acrescentando na quantidade de Não respondidos
+                avaliacao.qtdNao = avaliacao.qtdNao + 1;
+            }
+            // Alterando o próximo a ser respondido
+            avaliacao.nextIndex = avaliacao.nextIndex + 1;
+        } else if (avaliacao.respostas[index].answer === 'Sim' && answer === 'Nao') {
+            avaliacao.qtdSim = avaliacao.qtdSim - 1;
+            avaliacao.qtdNao = avaliacao.qtdNao + 1;
+        } else if (avaliacao.respostas[index].answer === 'Nao' && answer === 'Sim') {
             avaliacao.qtdSim = avaliacao.qtdSim + 1;
             avaliacao.qtdNao = avaliacao.qtdNao - 1;
-            avaliacao.nextIndex = avaliacao.nextIndex + 1;
         }
 
         // Alterando a resposta no index passado
