@@ -160,7 +160,7 @@ async function remove(req, res) {
     }
 }
 
-async function colaborador(req, res) {
+async function colab(req, res) {
     try {
         const { colaborador } = req.body;
 
@@ -206,4 +206,4 @@ async function indexColab(req, res) {
     }
 }
 
-export default { store, index, show,  answer, remove, colaborador, indexColab }; 
+export default { store, index, show,  answer, remove, colab, indexColab }; 
