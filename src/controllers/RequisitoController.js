@@ -1,5 +1,6 @@
 import { Requisito } from '../models/Requisito';
 import { GrupoRequisito } from '../models/GrupoRequisito';
+import { Gabarito } from '../models/Gabarito';
 
 async function store(req, res) {
     try {
@@ -96,14 +97,27 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const requisitoDeleted = await Requisito.findByIdAndRemove(req.params.id);
-
-        if (!requisitoDeleted) {
-            return res.status(404).json({ message: 'Grupo Requisito not found' });
+        const requisito = await Requisito.findById(req.params.id);
+        if (!requisito) {
+            return res.status(404).json({ message: 'Requisito not found' });
         }
+        const gabaritos = await Gabarito.find({requisito:req.params.id});
+        
+        // Tratando a exclusão de um requisito
+        gabaritos.forEach(async (element) => {
+            // Tirando o requisito de cada gabarito
+            // no array de requisito
+            var arr = element.requisito.filter((item) => !(item.equals(req.params.id)));
+            element.requisito = arr || element.requisito; // alterando apenas
+            await element.save();
+        });
+
+        // Excluindo o requisito
+        await requisito.remove();
 
         return res.status(200).json({ message: 'Requisito deleted with sucsess' });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }

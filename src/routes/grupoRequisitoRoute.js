@@ -14,6 +14,6 @@ router.post('/', validate(grupoReqRules), GrupoRequisitoController.store);
 router.get('/', GrupoRequisitoController.index);
 router.get('/:id', verifyId, GrupoRequisitoController.show);
 router.put('/:id', validate(grupoReqRules), verifyId, GrupoRequisitoController.update);
-router.delete('/:id', verifyId, GrupoRequisitoController.remove);
+//router.delete('/:id', verifyId, GrupoRequisitoController.remove);
 
 export default { router, name: '/gruporeq' };

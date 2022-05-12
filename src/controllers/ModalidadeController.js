@@ -1,4 +1,5 @@
 import { Modalidade } from '../models/Modalidade';
+import { Gabarito } from '../models/Gabarito';
 
 async function store(req, res) {
     try {
@@ -66,11 +67,17 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const modalidadeDeleted = await Modalidade.findByIdAndRemove(req.params.id);
-
-        if (!modalidadeDeleted) {
+        const modalidade = await Modalidade.findById(req.params.id);
+        if (!modalidade) {
             return res.status(404).json({ message: 'Modalidade not found' });
         }
+
+        const gabaritos = await Gabarito.find({modalidade:req.params.id});
+        gabaritos.forEach(async (element) => {
+            await element.remove();
+        });
+
+        await modalidade.remove();
 
         return res.status(200).json({ message: 'Modalidade deleted with sucsess' });
     } catch (error) {
