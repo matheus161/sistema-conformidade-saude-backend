@@ -1,4 +1,5 @@
 import { Categoria } from '../models/Categoria';
+import { Gabarito } from '../models/Gabarito';
 
 async function store(req, res) {
     try {
@@ -67,12 +68,18 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const categoriaDeleted = await Categoria.findByIdAndRemove(req.params.id);
-
-        if (!categoriaDeleted) {
+        const categoria = await Categoria.findById(req.params.id);
+        if (!categoria) {
             return res.status(404).json({ message: 'Categoria not found' });
         }
 
+        const gabaritos = await Gabarito.find({categoria:req.params.id});
+        gabaritos.forEach(async (element) => {
+            await element.remove();
+        });
+
+        await categoria.remove();
+        
         return res.status(200).json({ message: 'Categoria deleted with sucsess' });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });

@@ -98,16 +98,21 @@ async function update(req, res) {
 async function remove(req, res) {
     try {
         const requisito = await Requisito.findById(req.params.id);
-        //const requisitoDeleted = await Requisito.findByIdAndRemove(req.params.id);
         if (!requisito) {
             return res.status(404).json({ message: 'Requisito not found' });
         }
-        const gabaritos = await Gabarito.find();
-        Object.entries(gabaritos.requisito).forEach(async ([key, value]) => {
-
+        const gabaritos = await Gabarito.find({requisito:req.params.id});
+        
+        // Tratando a exclusão de um requisito
+        gabaritos.forEach(async (element) => {
+            // Tirando o requisito de cada gabarito
+            // no array de requisito
+            var arr = element.requisito.filter((item) => !(item.equals(req.params.id)));
+            element.requisito = arr;
+            await element.save();
         });
 
-        return res.status(200).json({ message: 'Requisito deleted with sucsess' });
+        return res.status(200).json('Requisito deleted with sucsess');
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
