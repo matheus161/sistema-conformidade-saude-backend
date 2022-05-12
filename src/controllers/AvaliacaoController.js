@@ -48,11 +48,18 @@ async function index(req, res) {
             .find({ user: userId})
             .populate(['user', 'respostas.requisito']); 
 
-        if (!avaliacao) {
-            return res.status(404).json({ message: 'Avaliacao not found' });
-        }
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = avaliacao.slice(startIndex, endIndex);
         
-        return res.status(200).json(avaliacao);
+        return res.status(200).json(paginatedResults);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
