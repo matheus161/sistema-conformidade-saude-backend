@@ -70,7 +70,8 @@ async function show(req, res) {
     try {
         const avaliacao = await Avaliacao
             .findById(req.params.id)
-            .populate(['user', 'gabarito', 'respostas.requisito']);
+            .populate(['user', 'gabarito',
+             'respostas.requisito', 'colaborador']);
 
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avaliacao not found' });
@@ -194,13 +195,26 @@ async function indexCollab(req, res) {
         // Mostrar todos as avaliações que aquele
         // user é colaborador
         const { userId } = req;
-        const avaliacoes = await Avaliacao.find({ colaborador: userId });
+        const avaliacoes = await Avaliacao
+            .find({ colaborador: userId })
+            .populate(['user', 'gabarito', 'respostas.requisito']);
 
         if (!avaliacoes) {
             return res.status(404).json({ message: 'Avalicao not found' });
         }
 
-        return res.status(200).json(avaliacoes);
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = avaliacoes.slice(startIndex, endIndex);
+
+        return res.status(200).json(paginatedResults);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
