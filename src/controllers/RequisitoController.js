@@ -1,5 +1,6 @@
 import { Requisito } from '../models/Requisito';
 import { GrupoRequisito } from '../models/GrupoRequisito';
+import { Gabarito } from '../models/Gabarito';
 
 async function store(req, res) {
     try {
@@ -96,11 +97,15 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const requisitoDeleted = await Requisito.findByIdAndRemove(req.params.id);
-
-        if (!requisitoDeleted) {
-            return res.status(404).json({ message: 'Grupo Requisito not found' });
+        const requisito = await Requisito.findById(req.params.id);
+        //const requisitoDeleted = await Requisito.findByIdAndRemove(req.params.id);
+        if (!requisito) {
+            return res.status(404).json({ message: 'Requisito not found' });
         }
+        const gabaritos = await Gabarito.find();
+        Object.entries(gabaritos.requisito).forEach(async ([key, value]) => {
+
+        });
 
         return res.status(200).json({ message: 'Requisito deleted with sucsess' });
     } catch (error) {
