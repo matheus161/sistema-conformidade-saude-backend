@@ -13,9 +13,12 @@ router.use(verifyToken);
 
 router.post('/', validate(avaliacaoRules), AvaliacaoController.store);
 router.get('/', AvaliacaoController.index);
+router.get('/colab', AvaliacaoController.indexColab);
 router.get('/:id', verifyId, AvaliacaoController.show);
 router.put('/:index/:answer/:id', verifyId, AvaliacaoController.answer);
 router.delete('/:id', verifyId, AvaliacaoController.remove);
-router.put('/:id', AvaliacaoController.addColaborador);
+router.put('/:id', verifyId, AvaliacaoController.colaborador);
+
+
 
 export default { router, name: '/avaliacao' };

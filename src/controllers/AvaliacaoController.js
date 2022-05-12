@@ -89,6 +89,7 @@ async function show(req, res) {
 
         return res.status(200).json(avaliacao);
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -159,34 +160,50 @@ async function remove(req, res) {
     }
 }
 
-async function addColaborador(req, res) {
+async function colaborador(req, res) {
     try {
-        const { coladorador } = req.body;
+        const { colaborador } = req.body;
 
         // Adicionado um novo coladorador ou retirando ele
         const avaliacao = await Avaliacao.findById(req.params.id);
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avalicao not found' });
         }
-
+        
         //Checando se o colaborador passado é válido       
-        for (let index = 0; index < coladorador.length; index++) {
-            if (coladorador[index] !== avaliacao.coladorador[index]) {
-                const colaboradorExists = await User.findById(coladorador[index]);
+        for (let index = 0; index < colaborador.length; index++) {
+            if (colaborador[index] !== avaliacao.colaborador[index]) {
+                const colaboradorExists = await User.findById(colaborador[index]);
                 if (!colaboradorExists) {
                     return res.status(404).json({ message: 'User not found' });
                 }
             }            
         }
 
-        avaliacao.coladorador = coladorador || avaliacao.coladorador;
+        avaliacao.colaborador = colaborador || avaliacao.colaborador;
         avaliacao.save();
 
         return res.status(200).json(avaliacao);
     } catch (error) {
-        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
 
-export default { store, index, show, answer, remove, addColaborador }; 
+async function indexColab(req, res) {
+    try {
+        // Mostrar todos as avaliações que aquele
+        // user é colaborador
+        const { userId } = req;
+        const avaliacoes = await Avaliacao.find({ colaborador: userId });
+
+        if (!avaliacoes) {
+            return res.status(404).json({ message: 'Avalicao not found' });
+        }
+
+        return res.status(200).json(avaliacoes);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export default { store, index, show,  answer, remove, colaborador, indexColab }; 
