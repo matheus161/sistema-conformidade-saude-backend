@@ -6,7 +6,6 @@ import { adminRules } from '../models/Admin';
 import verifyId from '../middlewares/verifyId';
 import { verifyTokenAdmin } from '../middlewares/verifyToken';
 
-
 const router = Router();
 
 router.use(limitRequests.slightly);
@@ -17,5 +16,6 @@ router.get('/', AdminController.index);
 router.get('/:id', verifyId, AdminController.show);
 router.put('/', AdminController.update);
 router.delete('/', AdminController.remove);
+router.patch('/changePass', AdminController.changePassword);
 
 export default { router, name: '/admin' };

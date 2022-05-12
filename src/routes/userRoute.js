@@ -15,6 +15,7 @@ router.put('/resetpass', UserController.resetPassword);
 
 router.use(verifyToken);
 
+router.patch('/changePass', UserController.changePassword);
 router.put('/', UserController.update);
 router.delete('/', UserController.remove);
 
