@@ -27,9 +27,20 @@ async function store(req, res) {
 
 async function index(req, res) {
     try {
-        const requisito = await Requisito.find().populate('grupoRequisito');
+        const requisitos = await Requisito.find().populate('grupoRequisito'); // Popular essa rota
 
-        return res.status(200).json(requisito);
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = requisitos.slice(startIndex, endIndex);
+
+        return res.status(200).json(paginatedResults);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }

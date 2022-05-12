@@ -1,15 +1,17 @@
 import { Admin } from '../models/Admin';
 import mailer from '../lib/mailer';
 import resetPass from '../constants/email_body/reset-pass';
+import { User } from '../models/User';
 
 async function store(req, res) {
     try {
         const { email } = req.body;
 
         const adminExists = await Admin.findOne({ email: email});
+        const userExists = await User.findOne({email: email});
 
-        if (adminExists) {
-            return res.status(400).json({ message: 'Admin already exists' });
+        if (adminExists || userExists) {
+            return res.status(400).json({ message: 'Email already used' });
         }
         const admin = await Admin.create(req.body);
         admin.password = undefined;
