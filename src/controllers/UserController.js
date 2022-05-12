@@ -1,9 +1,12 @@
 import { User } from '../models/User';
 import PasswordUtils from '../utils/PasswordUtils';
+import { Admin } from '../models/Admin';
 
 async function create(req, res) {
     try {
-        if (req.emailInUse) {
+        const adminExists = await Admin.findOne({email: req.body.email});
+
+        if (req.emailInUse || adminExists) {
             return res.status(400).json({ message: `O email ${req.body.email} já está em uso.` });
         }
 

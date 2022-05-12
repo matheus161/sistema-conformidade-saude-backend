@@ -39,7 +39,18 @@ async function index(req, res) {
     try {
         const gabaritos = await Gabarito.find().populate(['categoria', 'modalidade','requisito']);
 
-        return res.status(201).json(gabaritos);
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = gabaritos.slice(startIndex, endIndex);
+
+        return res.status(201).json(paginatedResults);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
