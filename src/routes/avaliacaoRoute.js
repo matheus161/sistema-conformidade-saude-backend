@@ -16,5 +16,6 @@ router.get('/', AvaliacaoController.index);
 router.get('/:id', verifyId, AvaliacaoController.show);
 router.put('/:index/:answer/:id', verifyId, AvaliacaoController.answer);
 router.delete('/:id', verifyId, AvaliacaoController.remove);
+router.put('/:id', AvaliacaoController.addColaborador);
 
 export default { router, name: '/avaliacao' };

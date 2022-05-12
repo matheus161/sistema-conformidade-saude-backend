@@ -2,6 +2,7 @@ import { Avaliacao } from "../models/Avaliacao";
 import { Gabarito } from "../models/Gabarito";
 import { Categoria } from "../models/Categoria";
 import { Modalidade } from "../models/Modalidade";
+import { User } from "../models/User";
 
 async function store(req, res) {
     try {
@@ -158,4 +159,34 @@ async function remove(req, res) {
     }
 }
 
-export default { store, index, show, answer, remove }; 
+async function addColaborador(req, res) {
+    try {
+        const { coladorador } = req.body;
+
+        // Adicionado um novo coladorador ou retirando ele
+        const avaliacao = await Avaliacao.findById(req.params.id);
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avalicao not found' });
+        }
+
+        //Checando se o colaborador passado é válido       
+        for (let index = 0; index < coladorador.length; index++) {
+            if (coladorador[index] !== avaliacao.coladorador[index]) {
+                const colaboradorExists = await User.findById(coladorador[index]);
+                if (!colaboradorExists) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+            }            
+        }
+
+        avaliacao.coladorador = coladorador || avaliacao.coladorador;
+        avaliacao.save();
+
+        return res.status(200).json(avaliacao);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export default { store, index, show, answer, remove, addColaborador }; 

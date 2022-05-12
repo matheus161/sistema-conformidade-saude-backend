@@ -60,10 +60,14 @@ const AvaliacaoSchema = new Schema(
             ref: 'Gabarito',
             required: true
         },
-        avaliador: {
+        // avaliador: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: 'User'
+        // },
+        colaborador: [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
-        },
+        }]
     },
 
     { timeStamps: true, discriminatorKey: 'role' },
