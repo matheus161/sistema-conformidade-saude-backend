@@ -21,7 +21,6 @@ const AdminSchema = new Schema(
             required: true,
             minlength: 8,
             maxlength: 40,
-            select: false,
         },
     },
 

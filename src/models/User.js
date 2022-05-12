@@ -21,7 +21,6 @@ const UserSchema = new Schema(
             required: true,
             minlength: 8,
             maxlength: 40,
-            select: false,
         },
     },
 
@@ -51,4 +50,6 @@ const authRules = Joi.object({
     password: passwordRules,
 });
 
-export { User, userRules, authRules };
+export {
+    User, userRules, authRules, passwordRules
+};
