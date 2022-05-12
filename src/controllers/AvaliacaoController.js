@@ -160,7 +160,7 @@ async function remove(req, res) {
     }
 }
 
-async function colab(req, res) {
+async function collab(req, res) {
     try {
         const { colaborador } = req.body;
 
@@ -189,7 +189,7 @@ async function colab(req, res) {
     }
 }
 
-async function indexColab(req, res) {
+async function indexCollab(req, res) {
     try {
         // Mostrar todos as avaliações que aquele
         // user é colaborador
@@ -206,4 +206,4 @@ async function indexColab(req, res) {
     }
 }
 
-export default { store, index, show,  answer, remove, colab, indexColab }; 
+export default { store, index, show,  answer, remove, collab, indexCollab }; 

@@ -14,8 +14,9 @@ router.use(verifyToken);
 router.post('/', validate(avaliacaoRules), AvaliacaoController.store);
 router.get('/', AvaliacaoController.index);
 router.get('/:id', verifyId, AvaliacaoController.show);
+router.get('/colab', AvaliacaoController.indexCollab);
 router.put('/:index/:answer/:id', verifyId, AvaliacaoController.answer);
 router.delete('/:id', verifyId, AvaliacaoController.remove);
-router.put('/:id', AvaliacaoController.colab);
+router.put('/:id', AvaliacaoController.collab);
 
 export default { router, name: '/avaliacao' };
