@@ -2,6 +2,7 @@ import { Avaliacao } from "../models/Avaliacao";
 import { Gabarito } from "../models/Gabarito";
 import { Categoria } from "../models/Categoria";
 import { Modalidade } from "../models/Modalidade";
+import { User } from "../models/User";
 
 async function store(req, res) {
     try {
@@ -69,7 +70,8 @@ async function show(req, res) {
     try {
         const avaliacao = await Avaliacao
             .findById(req.params.id)
-            .populate(['user', 'gabarito', 'respostas.requisito']);
+            .populate(['user', 'gabarito',
+             'respostas.requisito', 'colaborador']);
 
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avaliacao not found' });
@@ -88,6 +90,7 @@ async function show(req, res) {
 
         return res.status(200).json(avaliacao);
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -158,4 +161,63 @@ async function remove(req, res) {
     }
 }
 
-export default { store, index, show, answer, remove }; 
+async function collab(req, res) {
+    try {
+        const { colaborador } = req.body;
+
+        // Adicionado um novo coladorador ou retirando ele
+        const avaliacao = await Avaliacao.findById(req.params.id);
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avalicao not found' });
+        }
+        
+        //Checando se o colaborador passado é válido       
+        for (let index = 0; index < colaborador.length; index++) {
+            if (colaborador[index] !== avaliacao.colaborador[index]) {
+                const colaboradorExists = await User.findById(colaborador[index]);
+                if (!colaboradorExists) {
+                    return res.status(404).json({ message: 'User not found' });
+                }
+            }            
+        }
+
+        avaliacao.colaborador = colaborador || avaliacao.colaborador;
+        avaliacao.save();
+
+        return res.status(200).json(avaliacao);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function indexCollab(req, res) {
+    try {
+        // Mostrar todos as avaliações que aquele
+        // user é colaborador
+        const { userId } = req;
+        const avaliacoes = await Avaliacao
+            .find({ colaborador: userId })
+            .populate(['user', 'gabarito', 'respostas.requisito']);
+
+        if (!avaliacoes) {
+            return res.status(404).json({ message: 'Avalicao not found' });
+        }
+
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = avaliacoes.slice(startIndex, endIndex);
+
+        return res.status(200).json(paginatedResults);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export default { store, index, show,  answer, remove, collab, indexCollab }; 
