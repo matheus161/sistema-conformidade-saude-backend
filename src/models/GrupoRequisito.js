@@ -19,7 +19,7 @@ const GrupoRequisito = model('GrupoRequisito', GrupoReqSchema);
 
 const grupoReqRules = Joi.object({
     titulo: Joi.string().required(),
-    descricao: Joi.string().pattern(new RegExp(/^[A-Za-zÁÉÍÓÚáéíóúãõÃÕâêôÂÊÔ ]+$/)).required(),
+    descricao: Joi.string().required(),
 });
 
 export { GrupoRequisito, grupoReqRules };
