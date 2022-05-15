@@ -4,6 +4,7 @@ import { Categoria } from "../models/Categoria";
 import { Modalidade } from "../models/Modalidade";
 import { User } from "../models/User";
 import addColaborador from '../constants/email_body/addColaborador';
+import remColaborador from '../constants/email_body/remColaborador';
 import mailer from '../lib/mailer';
 
 async function store(req, res) {
@@ -232,7 +233,7 @@ async function remCollab(req, res) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        if (avaliacao.colaborador.length == 1) {
+        if (avaliacao.colaborador.length === 1) {
             avaliacao.colaborador = [];
         } else {
             var arr = avaliacao.colaborador.filter((item) => !(item.equals(user._id)));
@@ -240,6 +241,14 @@ async function remCollab(req, res) {
         }   
 
         avaliacao.save();
+
+        // Enviando email
+        mailer.sendMail({
+            from: 'Equipe Avalia SBIS <validasbis@hotmail.com>',
+            to: colaborador,
+            subject: 'Você não é não mais um colaborador',
+            html: remColaborador(user.name, avaliacao.nome),
+        }).catch(console.error);
 
         return res.status(200).json({ message: 'Colaborador removido com sucesso!'});
     } catch (error) {

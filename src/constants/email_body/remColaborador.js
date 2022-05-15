@@ -16,7 +16,7 @@ const resetpass = (name, projeto) => {
       ">
       <h1 style="text-align: center; color: white; margin-top: 0px">Equipe Avalia SBIS </h1>
       <h3 style="color: white; margin: 5px 0px">Olá ${name}!</h3>
-      <p style="color: white; margin: 5px 0px">Você foi adicionado como colaborador no projeto ${projeto}.</p>
+      <p style="color: white; margin: 5px 0px">Você não é mais um colaborador do projeto ${projeto}.</p>
       <p style="color: white; margin: 60px 0px 5px 0px"> Por favor não responda esse email.</p>
       <p style="color: white; margin: 5px 0px">Enviado com ❤ pela equipe Avalia SBIS.</p>
     </div>
