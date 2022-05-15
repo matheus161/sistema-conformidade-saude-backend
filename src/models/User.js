@@ -13,7 +13,6 @@ const UserSchema = new Schema(
             type: String,
             lowercase: true,
             required: true,
-            unique: true,
         },
 
         password: {
@@ -50,6 +49,11 @@ const authRules = Joi.object({
     password: passwordRules,
 });
 
+const userPassRules = Joi.object({ 
+    password: passwordRules,
+    newPassword: passwordRules,
+})
+
 export {
-    User, userRules, authRules, passwordRules
+    User, userRules, authRules, userPassRules
 };

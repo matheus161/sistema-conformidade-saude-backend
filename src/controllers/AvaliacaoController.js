@@ -152,14 +152,15 @@ async function answer(req, res) {
 
 async function remove(req, res) {
     try {
-       const avaliacaoDeleted = await Avaliacao.findByIdAndRemove(req.params.id);
-
-       if(avaliacaoDeleted) {
-        return res.status(404).json({ message: 'Avaliacao not found' });
-       }
-
-       return res.status(200).json({ message: 'Avaliacao deleted with sucsess' });
+        const avaliacaoDeleted = await Avaliacao.findById(req.params.id);
+    
+        if(!avaliacaoDeleted) {
+            return res.status(404).json({ message: 'Avaliacao not found' });
+        }
+        avaliacaoDeleted.remove();
+        return res.status(200).json({ message: 'Avaliacao deleted with sucsess' });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -286,4 +287,14 @@ async function indexCollab(req, res) {
     }
 }
 
-export default { store, index, show,  answer, remove, addCollab, remCollab, indexCollab }; 
+async function update(req, res) {
+    try {
+        const avaliacaoUpdated = await Avaliacao.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+        return res.status(200).json(avaliacaoUpdated);
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export default { store, index, show,  answer, remove, addCollab, remCollab, indexCollab, update }; 
