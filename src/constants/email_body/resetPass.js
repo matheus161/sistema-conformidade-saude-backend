@@ -19,7 +19,7 @@ const resetpass = (name, newPass) => {
       <p style="color: white; margin: 5px 0px">Não precisa se preocupar...Nós criamos uma nova senha para você! Não esqueça de altera-lá quando acessar a sua conta.</p>
       <p style="color: white; margin: 5px 0px">NOVA SENHA: <b>${newPass}</b></p>
       <p style="color: white; margin: 60px 0px 5px 0px"> Por favor não responda esse email </p>
-      <p style="color: white; margin: 5px 0px">Enviado com ❤ por Projeto Avalia SBIS.</p>
+      <p style="color: white; margin: 5px 0px">Enviado com ❤ pelo Projeto Avalia SBIS.</p>
     </div>
   </div> ` 
 };

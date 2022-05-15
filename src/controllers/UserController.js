@@ -1,6 +1,6 @@
 import { User } from '../models/User';
 import mailer from '../lib/mailer';
-import resetPass from '../constants/email_body/reset-pass';
+import resetPass from '../constants/email_body/resetPass';
 import PasswordUtils from '../utils/PasswordUtils';
 import { Admin } from '../models/Admin';
 
