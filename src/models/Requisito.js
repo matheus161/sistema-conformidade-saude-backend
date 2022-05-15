@@ -31,7 +31,7 @@ const Requisito = model('Requisito', RequisitoSchema);
 // Fazendo a verificação dos atributos direto na rota
 const requisitoRules = Joi.object({
     nameId: Joi.string(),
-    titulo: Joi.string().pattern(new RegExp(/^[A-Za-zÁÉÍÓÚáéíóúãõÃÕâêôÂÊÔ ]+$/)).required(),
+    titulo: Joi.string().required(),
     descricao: Joi.string().required(),
     grupoRequisito: Joi.string().required(),
 });

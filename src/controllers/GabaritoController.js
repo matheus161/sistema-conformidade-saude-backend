@@ -120,7 +120,7 @@ async function remove(req, res) {
     try {
        const gabaritoDeleted = await Gabarito.findByIdAndRemove(req.params.id);
 
-       if(gabaritoDeleted) {
+       if(!gabaritoDeleted) {
         return res.status(404).json({ message: 'Gabarito not found' });
        }
 

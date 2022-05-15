@@ -59,12 +59,13 @@ async function index(req, res) {
 
 async function show(req, res) {
     try {
-        const admin = await Admin.findById(req.params.id);
+        const { userId } = req;
+        const admin = await Admin.findById(userId);
 
         if (!admin) {
             return res.status(400).json({ message: 'Admin not found' });
         }
-
+        admin.password = undefined;
         return res.status(200).json(admin);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
@@ -74,27 +75,24 @@ async function show(req, res) {
 async function update(req, res) {
     try {
         const { userId } = req;
-        const { name, email } = req.body;
+        const { email } = req.body;
 
         const admin = await Admin.findById(userId);
-
         if (!admin) {
             return res.status(400).json({ message: 'Admin not found' });
         }
-
+        //console.log(admin, email, name);
         if (email !== admin.email) {
             const emailExist = await Admin.findOne({ email });
-            if (emailExist) return res.status(400).json({ message: 'Email already exists' });
+            const emailExistUser = await User.findOne({ email });
+            if (emailExist || emailExistUser) return res.status(400).json({ message: 'Email already exists' });
         }
 
-        await Admin.updateOne({
-            name,
-            email,
-        });
+        // Tenho que utilizar dessa forma porque o UpdateOne estava dando problema
+        const adminUpdated = await Admin.findByIdAndUpdate(userId, req.body, { new: true });
+        adminUpdated.password = undefined;
 
-        const adminUpdate = await Admin.findById(userId);
-
-        return res.status(200).json(adminUpdate);
+        return res.status(200).json(adminUpdated);
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
@@ -102,12 +100,12 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const admin = await Admin.findByIdAndRemove(req.userId);
+        const admin = await Admin.findById(req.userId);
 
         if (!admin) {
             return res.status(404).json({ message: 'Admin not found' });
         }
-
+        admin.remove();
         return res.status(200).json({ message: 'Admin successfully deleted' });
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });

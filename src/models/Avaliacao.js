@@ -83,8 +83,7 @@ const avaliacaoRules = Joi.object({
 const avaliacaoUpdateRules = Joi.object({
     nome: Joi.string(),
     versao: Joi.string(),
-    status: Joi.string().valid('Aberto','Finalizado'),
-    avaliador: Joi.string()
+    status: Joi.string().valid('Aberto','Finalizado').required(),
 });
 
 export { Avaliacao, avaliacaoRules, avaliacaoUpdateRules };

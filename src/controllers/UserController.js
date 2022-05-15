@@ -25,27 +25,23 @@ async function create(req, res) {
 async function update(req, res) { // Separar o update em dois: update e updatePass
     try {
         const { userId } = req;
-        const { name, email } = req.body;
+        const { email } = req.body;
 
         const user = await User.findById(userId);
-
         if (!user) {
             return res.status(404).json({ message: `Não foi encontrado usuário com o id ${userId}` });
         }
 
         if (email !== user.email) {
             const emailExist = await User.findOne({ email });
-            if (emailExist) return res.status(400).json({ message: 'Email already exists' });
+            const emailExistAdmin = await Admin.findOne({ email });
+            if (emailExist || emailExistAdmin) return res.status(400).json({ message: 'Email already exists' });
         }
 
-        await User.updateOne({
-            name,
-            email,
-        });
+        const userUpdated = await User.findByIdAndUpdate(userId, req.body, { new: true });//.select('+password');
+        userUpdated.password = undefined;
 
-        const updatedUser = await User.findById(userId);
-
-        return res.status(200).json(updatedUser);
+        return res.status(200).json(userUpdated);
     } catch ({ message }) {
         return res.status(500).json({ message });
     }
@@ -88,12 +84,14 @@ async function getAll(req, res) {
 
 async function getById(req, res) {
     try {
-        const user = await User.findById(req.params.id);
+        const { userId } = req;
+        const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ message: `Não há usuário com o id ${req.params.id}.` });
+            return res.status(404).json({ message: 'Não há usuário com o id informado' });
         }
 
+        user.password = undefined;
         return res.status(200).json(user);
     } catch ({ message }) {
         return res.status(500).json({ message });
@@ -108,7 +106,7 @@ async function remove(req, res) {
             return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
-        return res.status(200).json(user);
+        return res.status(200).json({ message: 'User successfully deleted' });
     } catch ({ message }) {
         return res.status(500).json({ message });
     }
