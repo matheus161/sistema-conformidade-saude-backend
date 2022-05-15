@@ -49,11 +49,16 @@ const authRules = Joi.object({
     password: passwordRules,
 });
 
+const userUpdateRules = Joi.object({
+    name: Joi.string().pattern(new RegExp(/^[A-Za-zÁÉÍÓÚáéíóúãõÃÕâêôÂÊÔ ]+$/)).required(),
+    email: emailRules
+});
+
 const userPassRules = Joi.object({ 
     password: passwordRules,
     newPassword: passwordRules,
 })
 
 export {
-    User, userRules, authRules, userPassRules
+    User, userRules, authRules, userPassRules, userUpdateRules
 };
