@@ -1,4 +1,5 @@
 import { GrupoRequisito } from '../models/GrupoRequisito';
+import { Requisito } from '../models/Requisito';
 
 async function store(req, res) {
     try {
@@ -71,11 +72,25 @@ async function update(req, res) {
 
 async function remove(req, res) {
     try {
-        const grupoReqDeleted = await GrupoRequisito.findByIdAndRemove(req.params.id);
+        const grupoReqDeleted = await GrupoRequisito.findById(req.params.id);
+        //const grupoReqDeleted = await GrupoRequisito.findByIdAndRemove(req.params.id);
 
         if (!grupoReqDeleted) {
             return res.status(404).json({ message: 'Grupo Requisito not found' });
         }
+
+        const requisitos = await Requisito.find({ grupoRequisito:req.params.id });
+
+        // Tratando a exclusão de um grupoReq
+        requisitos.forEach(async (element) => {
+            // Tirando o grupoReq de cada requisito
+            // no array de requisito
+            element.grupoRequisito = null;
+            await element.save();
+        });
+
+        // Romovendo o Grupo de Requisito
+        grupoReqDeleted.remove();
 
         return res.status(200).json({ message: 'Grupo Requisito deleted with sucsess' });
     } catch (error) {
