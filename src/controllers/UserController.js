@@ -134,7 +134,7 @@ async function resetPassword(req, res) {
 
         return res.status(200).json({ message: 'Email has been sent'});
 
-    } catch (error) {
+    } catch ({ message }) {
         return res.status(500).json({ message });
     }
 }
