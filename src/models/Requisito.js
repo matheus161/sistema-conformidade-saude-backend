@@ -17,8 +17,7 @@ const RequisitoSchema = new Schema(
         },
         grupoRequisito: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'GrupoRequisito',
-            required: true,
+            ref: 'GrupoRequisito'
         },
     },
 
