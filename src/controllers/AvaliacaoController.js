@@ -3,6 +3,8 @@ import { Gabarito } from "../models/Gabarito";
 import { Categoria } from "../models/Categoria";
 import { Modalidade } from "../models/Modalidade";
 import { User } from "../models/User";
+import addColaborador from '../constants/email_body/addColaborador';
+import mailer from '../lib/mailer';
 
 async function store(req, res) {
     try {
@@ -161,30 +163,85 @@ async function remove(req, res) {
     }
 }
 
-async function collab(req, res) {
+async function addCollab(req, res) {
     try {
         const { colaborador } = req.body;
 
-        // Adicionado um novo coladorador ou retirando ele
+        // Adicionado um novo coladorador
+        // Checando se a Avalicação existe
+        const avaliacao = await Avaliacao.findById(req.params.id);
+        if (!avaliacao) {
+            return res.status(404).json({ message: 'Avalicao not found' });
+        }
+
+        // Procurando um colaborador através do email
+        const user = await User.findOne({ email: colaborador });
+        //Checando se o colaborador passado é válido   
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        // Checando se ele está tentado se proprio adicionar
+        if( user._id.equals(avaliacao.user)) {
+            return res.status(404).json({ message: 'Operation not allowed' });
+        }
+        
+        //Checando se o colaborador já existe     
+        for (let index = 0; index < avaliacao.colaborador.length; index++) {
+            if(user._id.equals(avaliacao.colaborador[index]))
+                return res.status(404).json({ message: 'User already a Colaborador' });
+        }
+
+        // Adicionando o id de User no Array
+        var arr = avaliacao.colaborador;
+        arr.push(user.id);
+
+        avaliacao.colaborador = arr || avaliacao.colaborador;
+        avaliacao.save();
+
+        // Enviando email
+        mailer.sendMail({
+            from: 'Equipe Avalia SBIS <validasbis@hotmail.com>',
+            to: colaborador,
+            subject: 'Você agora é um colaborador',
+            html: addColaborador(user.name, avaliacao.nome),
+        }).catch(console.error);
+
+        return res.status(200).json({ message: 'Colaborador adicionado com sucesso!'});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+async function remCollab(req, res) {
+    try {
+        const { colaborador } = req.body;
+
+        // Removendo um coladorador
+        // Checando se a Avalicação existe
         const avaliacao = await Avaliacao.findById(req.params.id);
         if (!avaliacao) {
             return res.status(404).json({ message: 'Avalicao not found' });
         }
         
-        //Checando se o colaborador passado é válido       
-        for (let index = 0; index < colaborador.length; index++) {
-            if (colaborador[index] !== avaliacao.colaborador[index]) {
-                const colaboradorExists = await User.findById(colaborador[index]);
-                if (!colaboradorExists) {
-                    return res.status(404).json({ message: 'User not found' });
-                }
-            }            
+        // Procurando um colaborador através do email
+        const user = await User.findOne({ email: colaborador });
+        //Checando se o colaborador passado é válido   
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
         }
 
-        avaliacao.colaborador = colaborador || avaliacao.colaborador;
+        if (avaliacao.colaborador.length == 1) {
+            avaliacao.colaborador = [];
+        } else {
+            var arr = avaliacao.colaborador.filter((item) => !(item.equals(user._id)));
+            avaliacao.colaborador = arr || avaliacao.colaborador;
+        }   
+
         avaliacao.save();
 
-        return res.status(200).json(avaliacao);
+        return res.status(200).json({ message: 'Colaborador removido com sucesso!'});
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
@@ -220,4 +277,4 @@ async function indexCollab(req, res) {
     }
 }
 
-export default { store, index, show,  answer, remove, collab, indexCollab }; 
+export default { store, index, show,  answer, remove, addCollab, remCollab, indexCollab }; 

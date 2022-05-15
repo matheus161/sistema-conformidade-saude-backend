@@ -17,6 +17,7 @@ router.get('/:id', verifyId, AvaliacaoController.show);
 router.get('/show/collab', AvaliacaoController.indexCollab);
 router.put('/:index/:answer/:id', verifyId, AvaliacaoController.answer);
 router.delete('/:id', verifyId, AvaliacaoController.remove);
-router.put('/:id', AvaliacaoController.collab);
+router.put('/:id', AvaliacaoController.addCollab);
+router.put('/rem/:id', AvaliacaoController.remCollab);
 
 export default { router, name: '/avaliacao' };
