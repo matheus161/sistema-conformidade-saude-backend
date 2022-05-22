@@ -41,7 +41,9 @@ async function index(req, res) {
 
         const paginatedResults = requisitos.slice(startIndex, endIndex);
 
-        return res.status(200).json(paginatedResults);
+        var totalitens = requisitos.length;
+        
+        return res.status(200).json({paginatedResults,totalitens});
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
