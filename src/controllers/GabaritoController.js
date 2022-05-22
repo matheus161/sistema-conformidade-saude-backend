@@ -50,7 +50,9 @@ async function index(req, res) {
 
         const paginatedResults = gabaritos.slice(startIndex, endIndex);
 
-        return res.status(201).json(paginatedResults);
+        var totalitens = gabaritos.length;
+
+        return res.status(201).json({paginatedResults, totalitens});
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }

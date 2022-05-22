@@ -23,7 +23,20 @@ async function index(req, res) {
     try {
         const categorias = await Categoria.find();
 
-        return res.status(200).json(categorias);
+        // Paginação
+        const page = parseInt(req.query.page) || 0;
+
+        const limit = 10;
+
+        const startIndex = page * limit;
+
+        const endIndex = (page + 1) * limit;
+
+        const paginatedResults = categorias.slice(startIndex, endIndex);
+
+        var totalitens = categorias.length;
+
+        return res.status(200).json({paginatedResults, totalitens});
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }

@@ -62,8 +62,10 @@ async function index(req, res) {
         const endIndex = (page + 1) * limit;
 
         const paginatedResults = avaliacao.slice(startIndex, endIndex);
+
+        var totalitens = avaliacao.length;
         
-        return res.status(200).json(paginatedResults);
+        return res.status(200).json({paginatedResults, totalitens});
     } catch (error) {
         return res.status(500).json({ message: 'Internal server error' });
     }
